@@ -3,3 +3,4 @@ _build
 *.bak
 *.jar
 *.gz
+*.class
