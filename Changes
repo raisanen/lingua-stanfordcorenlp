@@ -1,6 +1,9 @@
 Revision history for Perl module Lingua::StanfordCoreNLP
 
 0.10	2013-02-19
+	- The big update is moving most of the Java code
+	  into a separate Java library, making development
+	  and maintenance much easier.
 	- Updated to latest Stanford CoreNLP version.
 	- Added the environmental variables
 	  LINGUA_CORENLP_JAR_PATH --- to let you override

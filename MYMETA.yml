@@ -15,10 +15,10 @@ name: Lingua-StanfordCoreNLP
 provides:
   Lingua::StanfordCoreNLP:
     file: lib/Lingua/StanfordCoreNLP.pm
-    version: 0.05
+    version: 0.10
 requires:
   Inline::Java: 0.53
   perl: v5.10.0
 resources:
   license: http://www.gnu.org/licenses/old-licenses/gpl-1.0.txt
-version: 0.05
+version: 0.10

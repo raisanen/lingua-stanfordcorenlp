@@ -109,13 +109,14 @@ ENVIRONMENT
   LINGUA_CORENLP_VERSION
     Version of jar-files in LINGUA_CORENLP_JAR_PATH.
 
-EXPORTED CLASSES
+EXPORTED CLASS
     Lingua::StanfordCoreNLP exports the following Java-classes via
     Inline::Java:
 
   Lingua::StanfordCoreNLP::Pipeline
     The main interface to "StanfordCoreNLP". This class is the only one you
-    can instantiate yourself.
+    can instantiate yourself. It is, basically, a perlified
+    be.fivebyfive.lingua.stanfordcorenlp.Pipeline.
 
     new
     new($bidirectionalCorefs)
@@ -147,7 +148,12 @@ EXPORTED CLASSES
         Process a string. Returns a
         "Lingua::StanfordCoreNLP::PipelineSentenceList".
 
-  Lingua::StanfordCoreNLP::PipelineItem
+JAVA CLASSES
+    In addition, Lingua::StanfordCoreNLP indirectly exports the following
+    Java-classes, all belonging to the namespace
+    "be.fivebyfive.lingua.stanfordcorenlp":
+
+  PipelineItem
     Abstract superclass of
     "Pipeline{Coreference,Dependency,Sentence,Token}". Contains ID and
     methods for getting and comparing it.
@@ -161,7 +167,7 @@ EXPORTED CLASSES
     identicalTo($b)
         Returns true if $b has an identical ID to this item.
 
-  Lingua::StanfordCoreNLP::PipelineCoreference
+  PipelineCoreference
     An object representing a coreference between head-word W1 in sentence S1
     and head-word W2 in sentence S2. Note that both sentences and words are
     zero-indexed, unlike the default outputs of Stanford's tools.
@@ -179,10 +185,10 @@ EXPORTED CLASSES
         Index of word W2 (in S2).
 
     getSourceToken
-        The "Lingua::StanfordCoreNLP::PipelineToken" representing W1.
+        The "PipelineToken" representing W1.
 
     getTargetToken
-        The "Lingua::StanfordCoreNLP::PipelineToken" representing W2.
+        The "PipelineToken" representing W2.
 
     equals($b)
         Returns true if this "PipelineCoreference" matches $b --- if their
@@ -199,7 +205,7 @@ EXPORTED CLASSES
         A String representation of the coreference --- "Word/POS-tag
         [sentence, head] <=> Word/POS-tag [sentence, head]".
 
-  Lingua::StanfordCoreNLP::PipelineDependency
+  PipelineDependency
     Represents a dependency in the Stanford Typed Dependency format. For
     example, in the fragment "Walk hard", "Walk" is the governor and "hard"
     is the dependent in the relationship "advmod" ("hard" is an adverbial
@@ -236,7 +242,7 @@ EXPORTED CLASSES
         defaults to true. (Note that unlike those of, e.g., the Stanford
         Parser, these indices start at zero, not one.)
 
-  Lingua::StanfordCoreNLP::PipelineSentence
+  PipelineSentence
     An annotated sentence, containing the sentence itself, its dependencies,
     pos- and ner-tagged tokens, and coreferences.
 
@@ -261,7 +267,7 @@ EXPORTED CLASSES
         dependencies, and tokens. "toCompactString" separates fields by
         "\n", whereas "toString" separates them by "\n\n".
 
-  Lingua::StanfordCoreNLP::PipelineToken
+  PipelineToken
     A token, with POS- and NER-tag and lemma.
 
     getWord
@@ -285,13 +291,13 @@ EXPORTED CLASSES
         A String representation of the token --- "word/POS-tag/NER-tag
         [lemma]".
 
-  Lingua::StanfordCoreNLP::PipelineList
-  Lingua::StanfordCoreNLP::PipelineCoreferenceList
-  Lingua::StanfordCoreNLP::PipelineDependencyList
-  Lingua::StanfordCoreNLP::PipelineSentenceList
-  Lingua::StanfordCoreNLP::PipelineTokenList
-    "Lingua::StanfordCoreNLP::PipelineList" is a generic list class which
-    extends "java.Util.ArrayList". It is in turn extended by
+  PipelineList
+  PipelineCoreferenceList
+  PipelineDependencyList
+  PipelineSentenceList
+  PipelineTokenList
+    "PipelineList" is a generic list class which extends
+    "java.Util.ArrayList". It is in turn extended by
     "Pipeline{Coreference,Dependency,Sentence,Token}List" (which are the
     list-types that "Pipeline" returns). Note that all lists are
     zero-indexed.
@@ -317,14 +323,11 @@ EXPORTED CLASSES
         except "PipelineTokenList" which uses " ").
 
 TODO
-    *   Custom annotator-combinations, so you won't have to load up six
-        different annotator models just to POSTag som text.
-
     *   Add representative mention to PipelineCoreference.
 
 REQUESTS & BUGS
-    Mail any bug-reports or feature-requests to
-    <StanfordCoreNLP@fivebyfive.be>.
+    Please file any issues, bug-reports, or feature-requests at
+    <https://github.com/raisanen/lingua-stanfordcorenlp>.
 
 AUTHORS
     Kalle Räisänen <kal@cpan.org>.

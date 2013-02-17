@@ -24,4 +24,6 @@ src/be/fivebyfive/lingua/stanfordcorenlp/PipelineSentence.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineSentenceList.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineToken.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineTokenList.java
+src/LinguaSCNLP.jar
+src/make.sh
 t/001_all.t

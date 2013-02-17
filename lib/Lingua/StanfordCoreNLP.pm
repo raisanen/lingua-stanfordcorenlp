@@ -182,7 +182,7 @@ Lingua::StanfordCoreNLP use all the jar-files in LINGUA_CORENLP_JAR_PATH.
 Version of jar-files in LINGUA_CORENLP_JAR_PATH.
 
 
-=head1 EXPORTED CLASSES
+=head1 EXPORTED CLASS
 
 Lingua::StanfordCoreNLP exports the following Java-classes via L<Inline::Java>:
 
@@ -190,7 +190,7 @@ Lingua::StanfordCoreNLP exports the following Java-classes via L<Inline::Java>:
 =head2 Lingua::StanfordCoreNLP::Pipeline
 
 The main interface to C<StanfordCoreNLP>. This class is the only one you
-can instantiate yourself.
+can instantiate yourself. It is, basically, a perlified be.fivebyfive.lingua.stanfordcorenlp.Pipeline.
 
 =over
 
@@ -232,7 +232,13 @@ Process a string. Returns a C<Lingua::StanfordCoreNLP::PipelineSentenceList>.
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineItem
+=head1 JAVA CLASSES
+
+In addition, Lingua::StanfordCoreNLP indirectly exports the following Java-classes,
+all belonging to the namespace C<be.fivebyfive.lingua.stanfordcorenlp>:
+
+
+=head2 PipelineItem
 
 Abstract superclass of C<Pipeline{Coreference,Dependency,Sentence,Token}>. Contains ID
 and methods for getting and comparing it.
@@ -254,7 +260,7 @@ Returns true if C<$b> has an identical ID to this item.
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineCoreference
+=head2 PipelineCoreference
 
 An object representing a coreference between head-word W1 in sentence S1 and head-word W2 in sentence S2.
 Note that both sentences and words are zero-indexed, unlike the default outputs of Stanford's tools.
@@ -279,11 +285,11 @@ Index of word W2 (in S2).
 
 =item getSourceToken
 
-The C<Lingua::StanfordCoreNLP::PipelineToken> representing W1.
+The C<PipelineToken> representing W1.
 
 =item getTargetToken
 
-The C<Lingua::StanfordCoreNLP::PipelineToken> representing W2.
+The C<PipelineToken> representing W2.
 
 =item equals($b)
 
@@ -306,7 +312,7 @@ A String representation of the coreference ---
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineDependency
+=head2 PipelineDependency
 
 Represents a dependency in the Stanford Typed Dependency format.
 For example, in the fragment "Walk hard", "Walk" is the governor and "hard"
@@ -355,7 +361,7 @@ whether governor and dependent indices are included, and defaults to true.
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineSentence
+=head2 PipelineSentence
 
 An annotated sentence, containing the sentence itself, its dependencies,
 pos- and ner-tagged tokens, and coreferences.
@@ -392,7 +398,7 @@ C<toCompactString> separates fields by "\n", whereas C<toString> separates them 
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineToken
+=head2 PipelineToken
 
 A token, with POS- and NER-tag and lemma.
 
@@ -428,17 +434,17 @@ A String representation of the token --- "word/POS-tag/NER-tag [lemma]".
 =back
 
 
-=head2 Lingua::StanfordCoreNLP::PipelineList
+=head2 PipelineList
 
-=head2 Lingua::StanfordCoreNLP::PipelineCoreferenceList
+=head2 PipelineCoreferenceList
 
-=head2 Lingua::StanfordCoreNLP::PipelineDependencyList
+=head2 PipelineDependencyList
 
-=head2 Lingua::StanfordCoreNLP::PipelineSentenceList
+=head2 PipelineSentenceList
 
-=head2 Lingua::StanfordCoreNLP::PipelineTokenList
+=head2 PipelineTokenList
 
-C<Lingua::StanfordCoreNLP::PipelineList> is a generic list class which
+C<PipelineList> is a generic list class which
 extends C<java.Util.ArrayList>. It is in turn extended by
 C<Pipeline{Coreference,Dependency,Sentence,Token}List> (which are the
 list-types that C<Pipeline> returns). Note that all lists are zero-indexed.
@@ -480,11 +486,6 @@ which uses " ").
 
 =item *
 
-Custom annotator-combinations, so you won't have to load up six different annotator
-models just to POSTag som text.
-
-=item *
-
 Add representative mention to PipelineCoreference.
 
 =back
@@ -492,7 +493,7 @@ Add representative mention to PipelineCoreference.
 
 =head1 REQUESTS & BUGS
 
-Mail any bug-reports or feature-requests to E<lt>StanfordCoreNLP@fivebyfive.beE<gt>.
+Please file any issues, bug-reports, or feature-requests at L<https://github.com/raisanen/lingua-stanfordcorenlp>.
 
 
 =head1 AUTHORS
