@@ -212,15 +212,13 @@ JAVA CLASSES
     modifier of "Walk").
 
     getGovernor
-        The governor in the relation as a
-        "Lingua::StanfordCoreNLP::PipelineToken".
+        The governor in the relation as a "PipelineToken".
 
     getGovernorIndex
         The index of the governor within the sentence.
 
     getDependent
-        The dependent in the relation as a
-        "Lingua::StanfordCoreNLP::PipelineToken".
+        The dependent in the relation as a "PipelineToken".
 
     getDependentIndex
         The index of the dependent within the sentence.
@@ -250,16 +248,16 @@ JAVA CLASSES
         Returns a string containing the original sentence
 
     getTokens
-        A "Lingua::StanfordCoreNLP::PipelineTokenList" containing the POS-
-        and NER-tagged and lemmaized tokens of the sentence.
+        A "PipelineTokenList" containing the POS- and NER-tagged and
+        lemmaized tokens of the sentence.
 
     getDependencies
-        A "Lingua::StanfordCoreNLP::PipelineDependencyList" containing the
-        dependencies found in the sentence.
+        A "PipelineDependencyList" containing the dependencies found in the
+        sentence.
 
     getCoreferences
-        A "Lingua::StanfordCoreNLP::PipelineCoreferenceList" of the
-        coreferences between this and other sentences.
+        A "PipelineCoreferenceList" of the coreferences between this and
+        other sentences.
 
     toCompactString
     toString

@@ -323,7 +323,7 @@ of "Walk").
 
 =item getGovernor
 
-The governor in the relation as a C<Lingua::StanfordCoreNLP::PipelineToken>.
+The governor in the relation as a C<PipelineToken>.
 
 =item getGovernorIndex
 
@@ -331,7 +331,7 @@ The index of the governor within the sentence.
 
 =item getDependent
 
-The dependent in the relation as a C<Lingua::StanfordCoreNLP::PipelineToken>.
+The dependent in the relation as a C<PipelineToken>.
 
 =item getDependentIndex
 
@@ -374,17 +374,17 @@ Returns a string containing the original sentence
 
 =item getTokens
 
-A C<Lingua::StanfordCoreNLP::PipelineTokenList> containing the POS- and
+A C<PipelineTokenList> containing the POS- and
 NER-tagged and lemmaized tokens of the sentence.
 
 =item getDependencies
 
-A C<Lingua::StanfordCoreNLP::PipelineDependencyList> containing the dependencies
+A C<PipelineDependencyList> containing the dependencies
 found in the sentence.
 
 =item getCoreferences
 
-A C<Lingua::StanfordCoreNLP::PipelineCoreferenceList> of the coreferences between
+A C<PipelineCoreferenceList> of the coreferences between
 this and other sentences.
 
 =item toCompactString
