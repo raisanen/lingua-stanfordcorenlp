@@ -17,31 +17,4 @@
  */
 package be.fivebyfive.lingua.stanfordcorenlp;
 
-public class PipelineTokenList extends PipelineList<PipelineToken>  {
-	@Override public String toCompactString() {
-		return joinListCompact(" ");
-	}
-
-	@Override public String toString() {
-		return joinList(" ");
-	}
-      
-   public PipelineTokenList slice(int start, int end) {
-      PipelineTokenList out = new PipelineTokenList();
-      
-      if (start < 0 || start > this.size() || end < 0 || end > this.size()) 
-         return out;
-      
-      if (end < start) {
-         int tmp = end;
-         end = start;
-         start = tmp;
-      }
-      
-      for (int i = start; i < end; i++) {
-         out.add(this.get(i));
-      }
-      
-      return out;
-   }
-}
+public class PipelineCorefList extends PipelineList<PipelineCoref> { }

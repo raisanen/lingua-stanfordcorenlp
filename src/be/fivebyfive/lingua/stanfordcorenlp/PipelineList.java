@@ -46,7 +46,7 @@ public class PipelineList<T> extends ArrayList<T> {
 
 		return hm;
 	}
-
+   
 	public String toCompactString()    { return joinListCompact("\n"); }
 	@Override public String toString() { return joinList("\n"); }
 }

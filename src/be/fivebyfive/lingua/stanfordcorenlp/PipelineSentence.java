@@ -18,46 +18,46 @@
 package be.fivebyfive.lingua.stanfordcorenlp;
 
 public class PipelineSentence extends PipelineItem {
-	private String                  sentence;
-	private PipelineTokenList       tokens;
-	private PipelineDependencyList  dependencies;
-	private PipelineCoreferenceList coreferences;
 
-	public String                  getSentence()     { return sentence; }
-	public PipelineTokenList       getTokens()       { return tokens; }
-	public PipelineDependencyList  getDependencies() { return dependencies; }
-	public PipelineCoreferenceList getCoreferences() { return coreferences; }
+   private String sentence;
+   private PipelineTokenList tokens;
+   private PipelineDependencyList dependencies;
+   private PipelineCorefChainList corefChains = new PipelineCorefChainList();
 
-	public PipelineSentence() {
-		sentence     = "";
-		tokens       = new PipelineTokenList();
-		dependencies = new PipelineDependencyList();
-		coreferences = new PipelineCoreferenceList();
-	}
+   public String                   getSentence()     { return sentence; }
+   public PipelineTokenList        getTokens()       { return tokens; }
+   public PipelineDependencyList   getDependencies() { return dependencies; }
+   public PipelineCorefChainList   getCorefChains()  { return corefChains; }
+   public void addCorefChain(PipelineCorefChain crc) {
+      this.corefChains.add(crc);
+   }
+   
+   public PipelineSentence() {
+      sentence = "";
+      tokens = new PipelineTokenList();
+      dependencies = new PipelineDependencyList();
+   }
 
-	public PipelineSentence(
-		String                 sentence,
-		PipelineTokenList      tokens,
-		PipelineDependencyList dependencies
-	) {
-		this.sentence     = sentence;
-		this.tokens       = tokens;
-		this.dependencies = dependencies;
-		this.coreferences = new PipelineCoreferenceList();
-	}
+   public PipelineSentence(
+           String sentence,
+           PipelineTokenList tokens,
+           PipelineDependencyList dependencies) {
+      this.sentence = sentence;
+      this.tokens = tokens;
+      this.dependencies = dependencies;
+   }
+   
+   public String toCompactString() {
+      return join("\n");
+   }
 
-	public void addCoreference(PipelineCoreference cr) {
-		coreferences.add(cr);
-	}
+   @Override
+   public String toString() {
+      return join("\n\n");
+   }
 
-	public String toCompactString() { return join("\n"); }
-
-	@Override public String toString() {
-		return join("\n\n");
-	}
-
-	public String join(String sep) {
-		return sentence + sep + tokens.toString() + sep + dependencies.toString() + sep
-					+ coreferences.toString();
-	}
+   public String join(String sep) {
+      return sentence + sep + tokens.toString() + sep + dependencies.toString() + sep
+              + corefChains.toString();
+   }
 }
