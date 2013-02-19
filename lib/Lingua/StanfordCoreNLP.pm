@@ -3,12 +3,12 @@ package Lingua::StanfordCoreNLP;
 use strict;
 #use warnings;
 
-our $JAR_PATH;
+our ($JAR_PATH, $JAVA_ARGS);
 
 BEGIN {
 	use Config;
 	use File::Spec;
-	use Env qw($LINGUA_CORENLP_JAR_PATH $LINGUA_CORENLP_VERSION);
+	use Env qw($LINGUA_CORENLP_JAR_PATH $LINGUA_CORENLP_VERSION $LINGUA_CORENLP_JAVA_ARGS);
 
 	use Exporter ();
 	our @ISA       = qw(Exporter);
@@ -19,6 +19,10 @@ BEGIN {
 	our $CORENLP_VERSION = defined $LINGUA_CORENLP_VERSION
 		? $LINGUA_CORENLP_VERSION
 		: '1.3.4';
+
+	$JAVA_ARGS = defined $LINGUA_CORENLP_JAVA_ARGS
+		? $LINGUA_CORENLP_JAVA_ARGS
+		: '-Xmx2000m';
 
 	my ($mod_path) = __FILE__ =~ /(.*)\.pm/;
 	my $pkg_path = defined $LINGUA_CORENLP_JAR_PATH ? $LINGUA_CORENLP_JAR_PATH : $mod_path;
@@ -44,7 +48,7 @@ BEGIN {
 use Inline (
 	Java            => 'DATA',
 	CLASSPATH       => $JAR_PATH,
-	EXTRA_JAVA_ARGS => '-Xmx2000m',
+	EXTRA_JAVA_ARGS => $JAVA_ARGS,
 	AUTOSTUDY       => 1
 );
 
@@ -181,6 +185,11 @@ Lingua::StanfordCoreNLP use all the jar-files in LINGUA_CORENLP_JAR_PATH.
 =head2 LINGUA_CORENLP_VERSION
 
 Version of jar-files in LINGUA_CORENLP_JAR_PATH.
+
+=head2 LINGUA_CORENLP_JAVA_ARGS
+
+Arguments to pass to JVM (via L<Inline::Java>). Defaults to C<-Xmx2000m> (increase max
+memory to 2000 MB).
 
 
 =head1 EXPORTED CLASS
@@ -488,6 +497,10 @@ which uses " ").
 =item *
 
 Add representative mention to PipelineCoreference.
+
+=item *
+
+Make build system also compile C<LinguaSCNLP.jar>.
 
 =back
 

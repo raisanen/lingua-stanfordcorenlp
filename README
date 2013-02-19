@@ -110,6 +110,10 @@ ENVIRONMENT
   LINGUA_CORENLP_VERSION
     Version of jar-files in LINGUA_CORENLP_JAR_PATH.
 
+  LINGUA_CORENLP_JAVA_ARGS
+    Arguments to pass to JVM (via Inline::Java). Defaults to "-Xmx2000m"
+    (increase max memory to 2000 MB).
+
 EXPORTED CLASS
     Lingua::StanfordCoreNLP exports the following Java-classes via
     Inline::Java:
@@ -323,6 +327,8 @@ JAVA CLASSES
 
 TODO
     *   Add representative mention to PipelineCoreference.
+
+    *   Make build system also compile "LinguaSCNLP.jar".
 
 REQUESTS & BUGS
     Please file any issues, bug-reports, or feature-requests at
