@@ -74,7 +74,8 @@ DESCRIPTION
     coreferences.
 
     (Note that the archive contains the CoreNLP annotation models, which is
-    why it's so darn big.)
+    why it's so darn big. Also note that versions before 0.10 have slightly
+    different API:s than 0.10+.)
 
 INSTALLATION
     The following should do the job:

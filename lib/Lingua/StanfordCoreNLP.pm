@@ -45,7 +45,7 @@ use Inline (
 	Java            => 'DATA',
 	CLASSPATH       => $JAR_PATH,
 	EXTRA_JAVA_ARGS => '-Xmx2000m',
-	AUTOSTUDY       => 1,
+	AUTOSTUDY       => 1
 );
 
 1;
@@ -140,7 +140,8 @@ This module implements a C<StanfordCoreNLP> pipeline for annotating
 text with part-of-speech tags, dependencies, lemmas, named-entity tags, and coreferences.
 
 (Note that the archive contains the CoreNLP annotation models, which is why
-it's so darn big.)
+it's so darn big. Also note that versions before 0.10 have slightly different
+API:s than 0.10+.)
 
 
 =head1 INSTALLATION
