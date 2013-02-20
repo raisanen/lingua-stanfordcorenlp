@@ -17,4 +17,4 @@
  */
 package be.fivebyfive.lingua.stanfordcorenlp;
 
-public class PipelineCorefList extends PipelineList<PipelineCoref> { }
+public class PipelineCorefMentionList extends PipelineList<PipelineCorefMention> { }

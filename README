@@ -3,11 +3,14 @@ NAME
     set.
 
 SYNOPSIS
+    The following example demonstrates how to use all the supported
+    annotators of Lingua::StanfordCoreNLP:
+
      # Note that Lingua::StanfordCoreNLP can't be instantiated.
      use Lingua::StanfordCoreNLP;
 
-     # Create a new NLP pipeline (make corefs bidirectional)
-     my $pipeline = new Lingua::StanfordCoreNLP::Pipeline(1);
+     # Create a new NLP pipeline:
+     my $pipeline = new Lingua::StanfordCoreNLP::Pipeline();
 
      # Get annotator properties:
      my $props = $pipeline->getProperties();
@@ -23,8 +26,6 @@ SYNOPSIS
      my $result = $pipeline->process(
         'Jane looked at the IBM computer. She turned it off.'
      );
-
-     my @seen_corefs;
 
      # Print results
      for my $sentence (@{$result->toArray}) {
@@ -52,21 +53,55 @@ SYNOPSIS
         }
 
         print "Coreferences:\n";
-        for my $coref (@{$sentence->getCoreferences->toArray}) {
-           printf "\t%s [%d, %d] <=> %s [%d, %d]\n",
-                  $coref->getSourceToken->getWord,
-                  $coref->getSourceSentence,
-                  $coref->getSourceHead,
-                  $coref->getTargetToken->getWord,
-                  $coref->getTargetSentence,
-                  $coref->getTargetHead;
-
-           print "\t\t(Duplicate)\n"
-              if(grep { $_->equals($coref) } @seen_corefs);
-
-           push @seen_corefs, $coref;
+        for my $corefChain (@{$sentence->getCorefChains->toArray}) {
+           if ($corefChain->isMultiSentence) {
+              my $repMention = $corefChain->getRepresentativeMention;
+              my @mentions   = map { $_->toString} @{$corefChain->getMentions->toArray};
+              printf "\t%s =>\n", $repMention->toString;
+              print  "\t\t",  join(' <=> ', @mentions), "\n";
+           }
         }
      }
+
+    The example code should output (other than debug info from the CoreNLP
+    toolkit) something similar to:
+
+     [Sentence ID: 80000000-0000-0000-8000-000000000001]:
+     Original sentence:
+        Jane looked at the IBM computer.
+     Tagged text:
+        Jane/NNP/PERSON [Jane]
+        looked/VBD/O [look]
+        at/IN/O [at]
+        the/DT/O [the]
+        IBM/NNP/ORGANIZATION [IBM]
+        computer/NN/O [computer]
+        ././O [.]
+     Dependencies:
+        nsubj(looked-1, Jane-0) [nominal subject]
+        det(computer-5, the-3) [determiner]
+        nn(computer-5, IBM-4) [nn modifier]
+        prep_at(looked-1, computer-5) [prep_collapsed]
+     Coreferences:
+        Jane [@0:0-1] =>
+           Jane [@0:0-1] <=> She [@1:0-1]
+        the IBM computer [@0:3-6] =>
+           the IBM computer [@0:3-6] <=> it [@1:2-3]
+
+     [Sentence ID: 80000000-0000-0000-8000-000000000002]:
+     Original sentence:
+        She turned it off.
+     Tagged text:
+        She/PRP/O [she]
+        turned/VBD/O [turn]
+        it/PRP/O [it]
+        off/RP/O [off]
+        ././O [.]
+     Dependencies:
+        nsubj(turned-1, She-0) [nominal subject]
+        dobj(turned-1, it-2) [direct object]
+        prt(turned-1, off-3) [phrasal verb particle]
+     Coreferences:
 
 DESCRIPTION
     This module implements a "StanfordCoreNLP" pipeline for annotating text
@@ -74,8 +109,8 @@ DESCRIPTION
     coreferences.
 
     (Note that the archive contains the CoreNLP annotation models, which is
-    why it's so darn big. Also note that versions before 0.10 have slightly
-    different API:s than 0.10+.)
+    why it's so darn big. Also note that versions before 0.11 have different
+    API:s for coreferences from 0.11+.)
 
 INSTALLATION
     The following should do the job:
@@ -83,6 +118,11 @@ INSTALLATION
      $ perl Build.PL
      $ ./Build test
      $ sudo ./Build install
+
+    If you want to rebuild the "LinguaSCNLP.jar" file containing the lion's
+    share of the functionality of Lingua::StanfordCoreNLP, run "make" in the
+    "src" directory, then copy the resulting "LinguaSCNLP.jar" into
+    "lib/Lingua/StanfordCoreNLP" before doing "perl Build.PL".
 
 PREREQUISITES
     Lingua::StanfordCoreNLP consists mainly of Java code, and thus needs
@@ -124,13 +164,10 @@ EXPORTED CLASS
     be.fivebyfive.lingua.stanfordcorenlp.Pipeline.
 
     new
-    new($bidirectionalCorefs)
+    new($properties)
         Creates a new "Lingua::StanfordCoreNLP::Pipeline" object. The
-        optional boolean parameter $bidirectionalCorefs makes coreferences
-        bidirectional; that is to say, the coreference is added to both the
-        source and the target sentence of all coreferences (if the source
-        and target sentence are different). $silent and $bidirectionalCorefs
-        default to false.
+        optional parameter $properties is used to pass options to the
+        StanfordCoreNLP pipeline. See "getProperties" and "setProperties".
 
     getProperties
         Returns a "java.util.Properties" object containing annotator
@@ -160,7 +197,7 @@ JAVA CLASSES
 
   PipelineItem
     Abstract superclass of
-    "Pipeline{Coreference,Dependency,Sentence,Token}". Contains ID and
+    "Pipeline{CorefMention,Dependency,Sentence,Token}". Contains ID and
     methods for getting and comparing it.
 
     getID
@@ -172,43 +209,51 @@ JAVA CLASSES
     identicalTo($b)
         Returns true if $b has an identical ID to this item.
 
-  PipelineCoreference
-    An object representing a coreference between head-word W1 in sentence S1
-    and head-word W2 in sentence S2. Note that both sentences and words are
-    zero-indexed, unlike the default outputs of Stanford's tools.
+  PipelineCorefChain
+    An object representing a chain of coreferences, consisting of a
+    representative mention and references to it.
 
-    getSourceSentence
-        Index of sentence S1.
+    getMentions
+        Returns a "PipelineCorefMentionList" of mentions to the
+        representative mention.
 
-    getTargetSentence
-        Index of sentence S2.
+    isMultiSentence
+        Returns true if the chain covers more than one sentence.
 
-    getSourceHead
-        Index of word W1 (in S1).
-
-    getTargetHead
-        Index of word W2 (in S2).
-
-    getSourceToken
-        The "PipelineToken" representing W1.
-
-    getTargetToken
-        The "PipelineToken" representing W2.
-
-    equals($b)
-        Returns true if this "PipelineCoreference" matches $b --- if their
-        "getSourceToken" and "getTargetToken" have the same ID. Note that it
-        returns true even if the orders of the coreferences are reversed (if
-        "$a->getSourceToken->getID == $b->getTargetToken->getID" and
-        "$a->getTargetToken->getID == $b->getSourceToken->getID").
-
-    toCompactString
-        A compact String representation of the coreference ---
-        "Word/Sentence:Head <=> Word/Sentence:Head".
+    getRepresentativeMention
+        Returns a "PipelineCorefMention" representing the representative
+        mention in the chain.
 
     toString
-        A String representation of the coreference --- "Word/POS-tag
-        [sentence, head] <=> Word/POS-tag [sentence, head]".
+        Return the chain as a string in the format "Repr. mention => mention
+        <=> mention <=> ...".
+
+  PipelineCorefMention
+    An object representing a coreference mention. Note that both sentences
+    and words are zero-indexed, unlike the default outputs of Stanford's
+    tools.
+
+    getStartIndex
+        Get index of the first token (word) of the mention.
+
+    getEndIndex
+        Get (one past) index of the last token of the mention.
+
+    getHeadIndex
+        Get the index of the "head word" of the mention.
+
+    getSentNum
+        Get the index of the sentence in which the mention is found.
+
+    getTokens
+        Get the tokens of the mention as a "PipelineTokenList".
+
+    getHeadToken
+        Get the head-word token of the mention.
+
+    toString
+        Get a string representation of the mention, of the format "mention
+        [@sentNum:startIndex-endIndex]".
 
   PipelineDependency
     Represents a dependency in the Stanford Typed Dependency format. For
@@ -260,9 +305,9 @@ JAVA CLASSES
         A "PipelineDependencyList" containing the dependencies found in the
         sentence.
 
-    getCoreferences
-        A "PipelineCoreferenceList" of the coreferences between this and
-        other sentences.
+    getCorefChains
+        A "PipelineCorefChainList" of the coreference chains between this
+        and other sentences.
 
     toCompactString
     toString
@@ -295,14 +340,15 @@ JAVA CLASSES
         [lemma]".
 
   PipelineList
-  PipelineCoreferenceList
+  PipelineCorefChainList
+  PipelineCorefMentionList
   PipelineDependencyList
   PipelineSentenceList
   PipelineTokenList
     "PipelineList" is a generic list class which extends
     "java.Util.ArrayList". It is in turn extended by
-    "Pipeline{Coreference,Dependency,Sentence,Token}List" (which are the
-    list-types that "Pipeline" returns). Note that all lists are
+    "Pipeline{CorefChain,CorefMention,Dependency,Sentence,Token}List" (which
+    are the list-types that "Pipeline" returns). Note that all lists are
     zero-indexed.
 
     joinList($sep)
@@ -326,9 +372,7 @@ JAVA CLASSES
         except "PipelineTokenList" which uses " ").
 
 TODO
-    *   Add representative mention to PipelineCoreference.
-
-    *   Make build system also compile "LinguaSCNLP.jar".
+    See <https://github.com/raisanen/lingua-stanfordcorenlp/issues>.
 
 REQUESTS & BUGS
     Please file any issues, bug-reports, or feature-requests at
@@ -374,4 +418,11 @@ COPYRIGHT
 SEE ALSO
     <http://nlp.stanford.edu/software/corenlp.shtml>,
     Text::NLP::Stanford::EntityExtract, NLP::StanfordParser, Inline::Java.
+
+POD ERRORS
+    Hey! The above document had some coding errors, which are explained
+    below:
+
+    Around line 376:
+        You forgot a '=back' before '=head2'
 

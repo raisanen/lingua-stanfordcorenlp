@@ -16,29 +16,40 @@
  * along with this program.  If not, see L<http://www.gnu.org/licenses/>.
  */
 package be.fivebyfive.lingua.stanfordcorenlp;
+
 import edu.stanford.nlp.dcoref.CorefChain.CorefMention;
 
-public class PipelineCoref extends PipelineItem {
-   public int startIndex = 0;
-   public int endIndex   = 0;
-   public int headIndex  = 0;
-   public int sentNum    = 0;
+public class PipelineCorefMention extends PipelineItem {
+   private int startIndex = 0;
+   private int endIndex   = 0;
+   private int headIndex  = 0;
+   private int sentNum    = 0;
    
-   public PipelineTokenList tokens;
-   public PipelineToken     headToken;
+   private PipelineTokenList tokens;
+   private PipelineToken     headToken;
    
+   public int getStartIndex() { return startIndex; }
+   public int getEndIndex()   { return endIndex; }
+   public int getHeadIndex()  { return headIndex; }
+   public int getSentNum()    { return sentNum; }
+   
+   public PipelineTokenList getTokens()    { return tokens; }
+   public PipelineToken     getHeadToken() { return headToken; }
 
-   public PipelineCoref() {}
+   public void setTokens(PipelineTokenList tl) { tokens = tl; }
+   public void setHeadToken(PipelineToken t)   { headToken = t; }
    
-   public PipelineCoref(int start, int end, int head, int sent) {
+   public PipelineCorefMention() {}
+   
+   public PipelineCorefMention(int start, int end, int head, int sent) {
       this.startIndex = start;
       this.endIndex   = end;
       this.headIndex  = head;
       this.sentNum    = sent;
    }
    
-   static PipelineCoref fromMention(CorefMention ment) {
-      return new PipelineCoref(
+   public static PipelineCorefMention fromMention(CorefMention ment) {
+      return new PipelineCorefMention(
         ment.startIndex - 1,
         ment.endIndex   - 1,
         ment.headIndex  - 1,

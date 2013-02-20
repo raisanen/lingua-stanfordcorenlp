@@ -14,8 +14,10 @@ META.json
 META.yml
 README
 src/be/fivebyfive/lingua/stanfordcorenlp/Pipeline.java
-src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCoreference.java
-src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCoreferenceList.java
+src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCorefChain.java
+src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCorefChainList.java
+src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCorefMention.java
+src/be/fivebyfive/lingua/stanfordcorenlp/PipelineCorefMentionList.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineDependency.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineDependencyList.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineItem.java
@@ -25,5 +27,5 @@ src/be/fivebyfive/lingua/stanfordcorenlp/PipelineSentenceList.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineToken.java
 src/be/fivebyfive/lingua/stanfordcorenlp/PipelineTokenList.java
 src/LinguaSCNLP.jar
-src/make.sh
+src/Makefile
 t/001_all.t

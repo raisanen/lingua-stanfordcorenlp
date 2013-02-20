@@ -18,15 +18,15 @@
 package be.fivebyfive.lingua.stanfordcorenlp;
 
 public class PipelineCorefChain {
-   private PipelineCorefList mentions = new PipelineCorefList();
-   private boolean           multiSentence = false;
-   public  PipelineCoref     representativeMention;
+   private PipelineCorefMentionList mentions = new PipelineCorefMentionList();
+   private boolean                  multiSentence = false;
+   private PipelineCorefMention     representativeMention;
    
-   public PipelineCorefList  getMentions() { return mentions; }
-   public void addMention(PipelineCoref c) {
+   public PipelineCorefMentionList  getMentions() { return mentions; }
+   public void addMention(PipelineCorefMention c) {
       if (!multiSentence) {
-         for (PipelineCoref m: mentions) {
-            if (m.sentNum != c.sentNum) {
+         for (PipelineCorefMention m: mentions) {
+            if (m.getSentNum() != c.getSentNum()) {
                multiSentence = true;
                break;
             }
@@ -35,7 +35,13 @@ public class PipelineCorefChain {
       mentions.add(c);
    }
    public boolean isMultiSentence() { return multiSentence; }
-   
+   public PipelineCorefMention getRepresentativeMention() {
+      return representativeMention;
+   }
+   public void setRepresentativeMention(PipelineCorefMention cr) {
+      representativeMention = cr;
+   }
+
    public PipelineCorefChain() { }
    
    @Override 

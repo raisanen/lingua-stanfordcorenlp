@@ -13,7 +13,7 @@ BEGIN {
 	use Exporter ();
 	our @ISA       = qw(Exporter);
 	our @EXPORT    = ();
-	our $VERSION   = '0.10';
+	our $VERSION   = '0.11';
 	    $VERSION   = eval $VERSION;
 
 	our $CORENLP_VERSION = defined $LINGUA_CORENLP_VERSION
@@ -58,10 +58,10 @@ __DATA__
 __Java__
 class Pipeline extends be.fivebyfive.lingua.stanfordcorenlp.Pipeline {
 	public Pipeline() {
-		this(false);
+		this(new java.util.Properties());
 	}
-   public Pipeline(boolean bidirectionalCorefs) {
-		super(bidirectionalCorefs);
+   public Pipeline(java.util.Properties props) {
+		super(props);
 	}
 }
 __END__
@@ -71,12 +71,15 @@ __END__
 Lingua::StanfordCoreNLP - A Perl interface to Stanford's CoreNLP tool set.
 
 =head1 SYNOPSIS
+
+The following example demonstrates how to use all the supported annotators of
+Lingua::StanfordCoreNLP:
    
  # Note that Lingua::StanfordCoreNLP can't be instantiated.
  use Lingua::StanfordCoreNLP;
 
- # Create a new NLP pipeline (make corefs bidirectional)
- my $pipeline = new Lingua::StanfordCoreNLP::Pipeline(1);
+ # Create a new NLP pipeline:
+ my $pipeline = new Lingua::StanfordCoreNLP::Pipeline();
 
  # Get annotator properties:
  my $props = $pipeline->getProperties();
@@ -92,8 +95,6 @@ Lingua::StanfordCoreNLP - A Perl interface to Stanford's CoreNLP tool set.
  my $result = $pipeline->process(
     'Jane looked at the IBM computer. She turned it off.'
  );
-
- my @seen_corefs;
 
  # Print results
  for my $sentence (@{$result->toArray}) {
@@ -121,21 +122,54 @@ Lingua::StanfordCoreNLP - A Perl interface to Stanford's CoreNLP tool set.
     }
 
     print "Coreferences:\n";
-    for my $coref (@{$sentence->getCoreferences->toArray}) {
-       printf "\t%s [%d, %d] <=> %s [%d, %d]\n",
-              $coref->getSourceToken->getWord,
-              $coref->getSourceSentence,
-              $coref->getSourceHead,
-              $coref->getTargetToken->getWord,
-              $coref->getTargetSentence,
-              $coref->getTargetHead;
-
-       print "\t\t(Duplicate)\n"
-          if(grep { $_->equals($coref) } @seen_corefs);
-
-       push @seen_corefs, $coref;
+    for my $corefChain (@{$sentence->getCorefChains->toArray}) {
+       if ($corefChain->isMultiSentence) {
+          my $repMention = $corefChain->getRepresentativeMention;
+          my @mentions   = map { $_->toString} @{$corefChain->getMentions->toArray};
+          printf "\t%s =>\n", $repMention->toString;
+          print  "\t\t",  join(' <=> ', @mentions), "\n";
+       }
     }
  }
+
+The example code should output (other than debug info from the CoreNLP toolkit) something similar to:
+
+ [Sentence ID: 80000000-0000-0000-8000-000000000001]:
+ Original sentence:
+    Jane looked at the IBM computer.
+ Tagged text:
+    Jane/NNP/PERSON [Jane]
+    looked/VBD/O [look]
+    at/IN/O [at]
+    the/DT/O [the]
+    IBM/NNP/ORGANIZATION [IBM]
+    computer/NN/O [computer]
+    ././O [.]
+ Dependencies:
+    nsubj(looked-1, Jane-0) [nominal subject]
+    det(computer-5, the-3) [determiner]
+    nn(computer-5, IBM-4) [nn modifier]
+    prep_at(looked-1, computer-5) [prep_collapsed]
+ Coreferences:
+    Jane [@0:0-1] =>
+       Jane [@0:0-1] <=> She [@1:0-1]
+    the IBM computer [@0:3-6] =>
+       the IBM computer [@0:3-6] <=> it [@1:2-3]
+
+ [Sentence ID: 80000000-0000-0000-8000-000000000002]:
+ Original sentence:
+    She turned it off.
+ Tagged text:
+    She/PRP/O [she]
+    turned/VBD/O [turn]
+    it/PRP/O [it]
+    off/RP/O [off]
+    ././O [.]
+ Dependencies:
+    nsubj(turned-1, She-0) [nominal subject]
+    dobj(turned-1, it-2) [direct object]
+    prt(turned-1, off-3) [phrasal verb particle]
+ Coreferences:
 
 
 =head1 DESCRIPTION
@@ -144,8 +178,8 @@ This module implements a C<StanfordCoreNLP> pipeline for annotating
 text with part-of-speech tags, dependencies, lemmas, named-entity tags, and coreferences.
 
 (Note that the archive contains the CoreNLP annotation models, which is why
-it's so darn big. Also note that versions before 0.10 have slightly different
-API:s than 0.10+.)
+it's so darn big. Also note that versions before 0.11 have different API:s for
+coreferences from 0.11+.)
 
 
 =head1 INSTALLATION
@@ -155,6 +189,11 @@ The following should do the job:
  $ perl Build.PL
  $ ./Build test
  $ sudo ./Build install
+
+If you want to rebuild the C<LinguaSCNLP.jar> file containing the lion's share of the
+functionality of Lingua::StanfordCoreNLP, run C<make> in the C<src> directory, then
+copy the resulting C<LinguaSCNLP.jar> into C<lib/Lingua/StanfordCoreNLP> before
+doing C<perl Build.PL>.
 
 
 =head1 PREREQUISITES
@@ -206,13 +245,11 @@ can instantiate yourself. It is, basically, a perlified be.fivebyfive.lingua.sta
 
 =item new
 
-=item new($bidirectionalCorefs)
+=item new($properties)
 
 Creates a new C<Lingua::StanfordCoreNLP::Pipeline> object. The optional
-boolean parameter C<$bidirectionalCorefs> makes coreferences bidirectional;
-that is to say, the coreference is added to both the source and the target
-sentence of all coreferences (if the source and target sentence are different).
-C<$silent> and C<$bidirectionalCorefs> default to false.
+parameter C<$properties> is used to pass options to the StanfordCoreNLP
+pipeline. See C<getProperties> and C<setProperties>.
 
 =item getProperties
 
@@ -250,7 +287,7 @@ all belonging to the namespace C<be.fivebyfive.lingua.stanfordcorenlp>:
 
 =head2 PipelineItem
 
-Abstract superclass of C<Pipeline{Coreference,Dependency,Sentence,Token}>. Contains ID
+Abstract superclass of C<Pipeline{CorefMention,Dependency,Sentence,Token}>. Contains ID
 and methods for getting and comparing it.
 
 =over
@@ -270,54 +307,68 @@ Returns true if C<$b> has an identical ID to this item.
 =back
 
 
-=head2 PipelineCoreference
+=head2 PipelineCorefChain
 
-An object representing a coreference between head-word W1 in sentence S1 and head-word W2 in sentence S2.
+An object representing a chain of coreferences, consisting of a representative mention and
+references to it.
+
+=over
+
+=item getMentions
+
+Returns a C<PipelineCorefMentionList> of mentions to the representative mention.
+
+=item isMultiSentence
+
+Returns true if the chain covers more than one sentence.
+
+=item getRepresentativeMention
+
+Returns a C<PipelineCorefMention> representing the representative mention in the chain.
+
+=item toString
+
+Return the chain as a string in the format "Repr. mention => mention <=> mention <=> ...".
+
+=back
+
+
+=head2 PipelineCorefMention
+
+An object representing a coreference mention.
 Note that both sentences and words are zero-indexed, unlike the default outputs of Stanford's tools.
 
 =over
 
-=item getSourceSentence
+=item getStartIndex
 
-Index of sentence S1.
+Get index of the first token (word) of the mention.
 
-=item getTargetSentence
+=item getEndIndex
 
-Index of sentence S2.
+Get (one past) index of the last token of the mention.
 
-=item getSourceHead
+=item getHeadIndex
 
-Index of word W1 (in S1).
+Get the index of the "head word" of the mention.
 
-=item getTargetHead
+=item getSentNum
 
-Index of word W2 (in S2).
+Get the index of the sentence in which the mention is found.
 
-=item getSourceToken
+=item getTokens
 
-The C<PipelineToken> representing W1.
+Get the tokens of the mention as a C<PipelineTokenList>.
 
-=item getTargetToken
+=item getHeadToken
 
-The C<PipelineToken> representing W2.
-
-=item equals($b)
-
-Returns true if this C<PipelineCoreference> matches C<$b> --- if
-their C<getSourceToken> and C<getTargetToken> have the same ID.
-Note that it returns true even if the orders of the
-coreferences are reversed (if C<< $a->getSourceToken->getID == $b->getTargetToken->getID >>
-and C<< $a->getTargetToken->getID == $b->getSourceToken->getID >>).
-
-=item toCompactString
-
-A compact String representation of the coreference ---
-"Word/Sentence:Head E<lt>=E<gt> Word/Sentence:Head".
+Get the head-word token of the mention.
 
 =item toString
 
-A String representation of the coreference ---
-"Word/POS-tag [sentence, head] E<lt>=E<gt> Word/POS-tag [sentence, head]".
+Get a string representation of the mention, of the format "mention [@sentNum:startIndex-endIndex]".
+
+=over
 
 =back
 
@@ -392,9 +443,9 @@ NER-tagged and lemmaized tokens of the sentence.
 A C<PipelineDependencyList> containing the dependencies
 found in the sentence.
 
-=item getCoreferences
+=item getCorefChains
 
-A C<PipelineCoreferenceList> of the coreferences between
+A C<PipelineCorefChainList> of the coreference chains between
 this and other sentences.
 
 =item toCompactString
@@ -446,7 +497,9 @@ A String representation of the token --- "word/POS-tag/NER-tag [lemma]".
 
 =head2 PipelineList
 
-=head2 PipelineCoreferenceList
+=head2 PipelineCorefChainList
+
+=head2 PipelineCorefMentionList
 
 =head2 PipelineDependencyList
 
@@ -456,7 +509,7 @@ A String representation of the token --- "word/POS-tag/NER-tag [lemma]".
 
 C<PipelineList> is a generic list class which
 extends C<java.Util.ArrayList>. It is in turn extended by
-C<Pipeline{Coreference,Dependency,Sentence,Token}List> (which are the
+C<Pipeline{CorefChain,CorefMention,Dependency,Sentence,Token}List> (which are the
 list-types that C<Pipeline> returns). Note that all lists are zero-indexed.
 
 =over
@@ -492,17 +545,7 @@ which uses " ").
 
 =head1 TODO
 
-=over
-
-=item *
-
-Add representative mention to PipelineCoreference.
-
-=item *
-
-Make build system also compile C<LinguaSCNLP.jar>.
-
-=back
+See L<https://github.com/raisanen/lingua-stanfordcorenlp/issues>.
 
 
 =head1 REQUESTS & BUGS

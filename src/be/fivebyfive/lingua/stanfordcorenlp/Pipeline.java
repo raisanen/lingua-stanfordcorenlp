@@ -148,27 +148,29 @@ public class Pipeline {
             
             if (rm != null) {
                PipelineCorefChain crChain = new PipelineCorefChain();
-               PipelineCoref repRef = PipelineCoref.fromMention(rm);               
-               repRef.tokens = 
+               PipelineCorefMention repRef = PipelineCorefMention.fromMention(rm);               
+               repRef.setTokens(
+                    outList.get(repRef.getSentNum()).getTokens()
+                       .slice(repRef.getStartIndex(), repRef.getEndIndex())
+               );
+               repRef.setHeadToken( 
                     outList
-                       .get(repRef.sentNum)
+                       .get(repRef.getSentNum())
                        .getTokens()
-                       .slice(repRef.startIndex, repRef.endIndex);
-               repRef.headToken = 
-                    outList
-                       .get(repRef.sentNum)
-                       .getTokens()
-                       .get(repRef.headIndex);
-               crChain.representativeMention = repRef;
+                       .get(repRef.getHeadIndex())
+               );
+               crChain.setRepresentativeMention(repRef);
                if (crms.size() > 0) {
                   for (CorefMention cm: crms) {
-                     PipelineCoref cr = PipelineCoref.fromMention(cm);
-                     cr.tokens = outList.get(cr.sentNum).getTokens()
-                             .slice(cr.startIndex, cr.endIndex);
+                     PipelineCorefMention cr = PipelineCorefMention.fromMention(cm);
+                     cr.setTokens(
+                        outList.get(cr.getSentNum()).getTokens()
+                           .slice(cr.getStartIndex(), cr.getEndIndex())
+                     );
                      crChain.addMention(cr);
                   }
                }
-               outList.get(repRef.sentNum).addCorefChain(crChain);
+               outList.get(repRef.getSentNum()).addCorefChain(crChain);
             }//if(rm
          }//for
       }//if(graph
