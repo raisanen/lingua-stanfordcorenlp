@@ -45,14 +45,21 @@ import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphEdge;
+import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.BasicDependenciesAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
+import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedDependenciesAnnotation;
 
 import edu.stanford.nlp.util.CoreMap;
 
 public class Pipeline {
-
-   private StanfordCoreNLP pipeline = null;
-   private Properties props = null;
+   public final static String DEP_PROPERTY  = "lingua.dependency-mode";
+   public final static String DEP_BASIC     = "basic";
+   public final static String DEP_COLLAPSED = "collapsed";
+   public final static String DEP_PROCESSED = "processed";
+   
+   protected String depMode = DEP_PROCESSED;
+   protected StanfordCoreNLP pipeline = null;
+   protected Properties props = null;
 
    public StanfordCoreNLP getPipeline() {
       return pipeline;
@@ -73,11 +80,16 @@ public class Pipeline {
    public Pipeline(Properties props) {
       this.props = props;
       if (this.props.isEmpty()) {
-         props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+         props.setProperty(DEP_PROPERTY, DEP_PROCESSED);
       }
    }
 
    public void initPipeline() {
+      String dmode = props.getProperty(DEP_PROPERTY);
+      if (dmode != null) {
+         depMode = props.getProperty(DEP_PROPERTY);
+      }
       pipeline = new StanfordCoreNLP(props, false);
    }
    
@@ -110,7 +122,11 @@ public class Pipeline {
          }
 
          SemanticGraph dependencies = sentence.get(
-            CollapsedCCProcessedDependenciesAnnotation.class
+            depMode.equals(DEP_BASIC)
+                 ? BasicDependenciesAnnotation.class
+                 : depMode.equals(DEP_COLLAPSED)
+                     ? CollapsedDependenciesAnnotation.class
+                     : CollapsedCCProcessedDependenciesAnnotation.class
          );
 
          if (dependencies != null) {

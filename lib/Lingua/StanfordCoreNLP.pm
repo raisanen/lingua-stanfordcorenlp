@@ -85,7 +85,10 @@ Lingua::StanfordCoreNLP:
  my $props = $pipeline->getProperties();
 
  # These are the default annotator properties:
- $props->put('annotators', 'tokenize, ssplit, pos, lemma, ner, parse, dcoref');
+ $props->setProperty('annotators', 'tokenize, ssplit, pos, lemma, ner, parse, dcoref');
+
+ # This is the default dependency-parsing mode (see man-page under PROPERTIES for info):
+ $props->setProperty('lingua.dependency-mode', 'collapsed');
 
  # Update properties:
  $pipeline->setProperties($props);
@@ -231,6 +234,34 @@ Arguments to pass to JVM (via L<Inline::Java>). Defaults to C<-Xmx2000m> (increa
 memory to 2000 MB).
 
 
+=head1 PROPERTIES
+
+Properties are set using the L<setProperties>-method on L<Lingua::StanfordCoreNLP::Pipeline>.
+Properties can be used to change the behaviour of the annotators; see the CoreNLP documentation
+for information on annotator-properties. One Lingua::StanfordCoreNLP-specific property is available:
+C<lingua.dependency-mode>, which controls which type of dependency annotation is returned.
+
+There are three possible values for C<lingua.dependency-mode>:
+
+=over
+
+=item "basic"
+
+Basic, uncollapsed dependencies using BasicDependenciesAnnotation.
+
+=item "collapsed"
+
+Collapsed dependencies using CollapsedDependenciesAnnotation.
+
+=item "processed"
+
+Collapsed dependencies with processed coordinations using CollapsedCCProcessedDependenciesAnnotation.
+
+=back
+
+The default mode is "processed".
+
+
 =head1 EXPORTED CLASS
 
 Lingua::StanfordCoreNLP exports the following Java-classes via L<Inline::Java>:
@@ -254,8 +285,9 @@ pipeline. See C<getProperties> and C<setProperties>.
 =item getProperties
 
 Returns a C<java.util.Properties> object containing annotator options. By default
-it contains a single entry, "annotators", which has the value "tokenize, ssplit, pos,
-lemma, ner, parse, dcoref".
+it contains two entries: "annotators" which has the value "tokenize, ssplit, pos,
+lemma, ner, parse, dcoref", and "lingua.dependency-mode" which has the value
+"processed".
 
 =item setProperties($prop)
 

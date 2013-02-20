@@ -16,7 +16,10 @@ SYNOPSIS
      my $props = $pipeline->getProperties();
 
      # These are the default annotator properties:
-     $props->put('annotators', 'tokenize, ssplit, pos, lemma, ner, parse, dcoref');
+     $props->setProperty('annotators', 'tokenize, ssplit, pos, lemma, ner, parse, dcoref');
+
+     # This is the default dependency-parsing mode (see man-page under PROPERTIES for info):
+     $props->setProperty('lingua.dependency-mode', 'collapsed');
 
      # Update properties:
      $pipeline->setProperties($props);
@@ -154,6 +157,29 @@ ENVIRONMENT
     Arguments to pass to JVM (via Inline::Java). Defaults to "-Xmx2000m"
     (increase max memory to 2000 MB).
 
+PROPERTIES
+    Properties are set using the setProperties-method on
+    Lingua::StanfordCoreNLP::Pipeline. Properties can be used to change the
+    behaviour of the annotators; see the CoreNLP documentation for
+    information on annotator-properties. One
+    Lingua::StanfordCoreNLP-specific property is available:
+    "lingua.dependency-mode", which controls which type of dependency
+    annotation is returned.
+
+    There are three possible values for "lingua.dependency-mode":
+
+    "basic"
+        Basic, uncollapsed dependencies using BasicDependenciesAnnotation.
+
+    "collapsed"
+        Collapsed dependencies using CollapsedDependenciesAnnotation.
+
+    "processed"
+        Collapsed dependencies with processed coordinations using
+        CollapsedCCProcessedDependenciesAnnotation.
+
+    The default mode is "processed".
+
 EXPORTED CLASS
     Lingua::StanfordCoreNLP exports the following Java-classes via
     Inline::Java:
@@ -171,8 +197,9 @@ EXPORTED CLASS
 
     getProperties
         Returns a "java.util.Properties" object containing annotator
-        options. By default it contains a single entry, "annotators", which
-        has the value "tokenize, ssplit, pos, lemma, ner, parse, dcoref".
+        options. By default it contains two entries: "annotators" which has
+        the value "tokenize, ssplit, pos, lemma, ner, parse, dcoref", and
+        "lingua.dependency-mode" which has the value "processed".
 
     setProperties($prop)
         Updates annotator options. Expects a "java.util.Properties" object.
