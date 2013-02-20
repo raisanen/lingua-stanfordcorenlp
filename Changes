@@ -1,9 +1,12 @@
-Revision history for Perl module Lingua::StanfordCoreNLP
+Revision history for Perl module Lingua::StanfordCoreNLP.
+See commit log at <https://github.com/raisanen/lingua-stanfordcorenlp/commits/master>
+for more info.
+
+0.11	2013-02-20
+	- Changed coreference API.
+	- Small changes to build system.
 
 0.10	2013-02-19
-	- The big update is moving most of the Java code
-	  into a separate Java library, making development
-	  and maintenance much easier.
 	- Updated to latest Stanford CoreNLP version.
 	- Added the environmental variables
 	  LINGUA_CORENLP_JAR_PATH --- to let you override
@@ -21,11 +24,9 @@ Revision history for Perl module Lingua::StanfordCoreNLP
 	  the CorefChain API has apparently changed.
 	- Changed tests to use Test::More rather than
 	  Test::Simple. Added more tests.
-	- Removed silencing of output, which seems to
+	- Disabled silencing of output, which seems to
 	  hang the new CoreNLP. Will look into it for future
 	  versions if someone asks me to.
-	- Sources are now available on GitHub:
-	  https://github.com/raisanen/lingua-stanfordcorenlp
 
 0.04  2012-05-29
 	- Updated to latest StanfordCoreNLP version.
