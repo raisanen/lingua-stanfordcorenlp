@@ -21,9 +21,11 @@ Revision history for Perl module Lingua::StanfordCoreNLP
 	  the CorefChain API has apparently changed.
 	- Changed tests to use Test::More rather than
 	  Test::Simple. Added more tests.
-	- Disabled silencing of output, which seems to
+	- Removed silencing of output, which seems to
 	  hang the new CoreNLP. Will look into it for future
 	  versions if someone asks me to.
+	- Sources are now available on GitHub:
+	  https://github.com/raisanen/lingua-stanfordcorenlp
 
 0.04  2012-05-29
 	- Updated to latest StanfordCoreNLP version.
