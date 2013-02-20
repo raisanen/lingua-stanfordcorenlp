@@ -419,10 +419,3 @@ SEE ALSO
     <http://nlp.stanford.edu/software/corenlp.shtml>,
     Text::NLP::Stanford::EntityExtract, NLP::StanfordParser, Inline::Java.
 
-POD ERRORS
-    Hey! The above document had some coding errors, which are explained
-    below:
-
-    Around line 376:
-        You forgot a '=back' before '=head2'
-

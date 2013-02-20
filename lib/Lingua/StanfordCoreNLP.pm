@@ -368,8 +368,6 @@ Get the head-word token of the mention.
 
 Get a string representation of the mention, of the format "mention [@sentNum:startIndex-endIndex]".
 
-=over
-
 =back
 
 
