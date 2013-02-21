@@ -1,8 +1,9 @@
 JAVAC     = javac
 JAR       = jar -cf
 BIN       = LinguaSCNLP.jar
+BINDIR    = ../lib/Lingua/StanfordCoreNLP
 SOURCEDIR = be/fivebyfive/lingua/stanfordcorenlp
-JFLAGS    = -classpath ../lib/Lingua/StanfordCoreNLP/stanford-corenlp-?.?.?.jar -sourcepath . -g:none
+JFLAGS    = -classpath $(BINDIR)/stanford-corenlp-?.?.?.jar -sourcepath . -g:none
 SOURCES   = $(wildcard $(SOURCEDIR)/*.java)
 CLASSES   = $(SOURCES:.java=.class)
 
@@ -15,3 +16,6 @@ clean :
 
 %.class : %.java
 	$(JAVAC) $(JFLAGS) $<
+
+dist: clean all
+	cp $(BIN) $(BINDIR)
